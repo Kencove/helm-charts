@@ -1,0 +1,10 @@
+apiVersion: v2
+name: typesense
+description: A Helm chart for Typesense search engine
+type: application
+version: 0.1.0
+appVersion: "0.27.1"
+kubeVersion: ">=1.19.0-0"
+maintainers:
+  - name: Don Kendall - Kencove
+    email: kendall@donkendall.com

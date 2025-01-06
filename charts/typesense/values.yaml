@@ -1,0 +1,84 @@
+# Default values for typesense
+replicaCount: 1
+
+# Pod management policy for StatefulSet
+podManagementPolicy: OrderedReady
+
+# Update strategy for StatefulSet
+updateStrategy: RollingUpdate
+
+image:
+  repository: typesense/typesense
+  tag: "27.1"
+  pullPolicy: IfNotPresent
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 8108
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: ""  # The host name to use for the ingress
+  path: "/"  # The path to use for the ingress
+  pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+# Probes configuration
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Typesense specific configuration
+typesense:
+  apiKey: "xyz"
+  enableCors: true
+  extraArgs: []
+
+# Additional environment variables
+extraEnvVars: []
+  # - name: EXTRA_VAR
+  #   value: "extra-value"

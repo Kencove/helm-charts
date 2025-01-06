@@ -1,0 +1,117 @@
+{{/* _helpers.tpl */}}
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "typesense.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+*/}}
+{{- define "typesense.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "typesense.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "typesense.labels" -}}
+helm.sh/chart: {{ include "typesense.chart" . }}
+{{ include "typesense.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "typesense.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "typesense.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "typesense.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "typesense.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Ingress annotations
+*/}}
+{{- define "typesense.ingress.annotations" -}}
+{{- if .Values.ingress.annotations }}
+{{- toYaml .Values.ingress.annotations }}
+{{- end }}
+{{- end }}
+
+{{/*
+Return the ingress host
+*/}}
+{{- define "typesense.ingress.host" -}}
+{{- if .Values.ingress.host -}}
+{{- .Values.ingress.host -}}
+{{- else -}}
+{{- include "typesense.fullname" . -}}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the ingress URL
+*/}}
+{{- define "typesense.ingress.url" -}}
+{{- $host := include "typesense.ingress.host" . -}}
+{{- $path := include "typesense.ingress.path" . -}}
+{{- if .Values.ingress.tls -}}
+https://{{ $host }}{{ $path }}
+{{- else -}}
+http://{{ $host }}{{ $path }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Ingress path
+*/}}
+{{- define "typesense.ingress.path" -}}
+{{- if .Values.ingress.path -}}
+{{- .Values.ingress.path -}}
+{{- else -}}
+/
+{{- end -}}
+{{- end -}}
+
+{{/*
+Ingress pathType
+*/}}
+{{- define "typesense.ingress.pathType" -}}
+{{- if .Values.ingress.pathType -}}
+{{- .Values.ingress.pathType -}}
+{{- else -}}
+ImplementationSpecific
+{{- end -}}
+{{- end -}}
